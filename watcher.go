@@ -79,7 +79,6 @@ func (w *watcher) getInstance() ([]*registry.ServiceInstance, error) {
 			if e != nil {
 				return nil, err
 			}
-			u.Scheme = "grpc"
 			si.Endpoints = append(si.Endpoints, u.String())
 		}
 		if si.Name != w.serviceName {
