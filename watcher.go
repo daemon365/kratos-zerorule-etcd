@@ -66,13 +66,16 @@ func (w *watcher) getInstance() ([]*registry.ServiceInstance, error) {
 	}
 	items := make([]*registry.ServiceInstance, 0, len(resp.Kvs))
 	for _, kv := range resp.Kvs {
-		var si = &registry.ServiceInstance{}
-		var err error
-		si, err = unmarshal(kv.Value)
+		si, err := unmarshal(kv.Value)
 		if err != nil {
+			si = &registry.ServiceInstance{}
 			si.ID = strings.TrimPrefix(string(kv.Key), w.serviceName+"/")
 			si.Name = w.serviceName
-			u, e := url.Parse(string(kv.Value))
+			value := string(kv.Value)
+			if !strings.Contains(value, "://") {
+				value = "grpc://" + value
+			}
+			u, e := url.Parse(value)
 			if e != nil {
 				return nil, err
 			}
